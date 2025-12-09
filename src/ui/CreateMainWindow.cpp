@@ -16,6 +16,8 @@
 #include <QPointer>
 #include <QMap>
 #include <memory>
+#include <QFrame>
+#include <QFont>
 
 #include "../core/StartDownloadFile.hpp"
 #include "../core/ExtractInstallParts.hpp"
@@ -43,6 +45,63 @@ QMainWindow* createMainWindow(Config& cfg, QWidget* parent) {
 
     auto* central = new QWidget(window);
     auto* layout = new QVBoxLayout(central);
+    central->setStyleSheet(R"(
+        QWidget {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: "SF Pro Display", "Helvetica Neue", Arial;
+            font-size: 14px;
+        }
+        QFrame#card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 14px;
+        }
+        QPushButton {
+            background: #1d4ed8;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: white;
+            font-weight: 600;
+        }
+        QPushButton:disabled {
+            background: #334155;
+            color: #94a3b8;
+        }
+        QPushButton#secondary {
+            background: #1f2937;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+        }
+        QLabel#title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        QLabel#subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        QProgressBar {
+            background: #0f172a;
+            border: 1px solid #1f2937;
+            border-radius: 6px;
+            height: 12px;
+            text-align: center;
+            color: #e2e8f0;
+        }
+        QProgressBar::chunk {
+            background-color: #22c55e;
+            border-radius: 6px;
+        }
+    )");
+
+    auto* title = new QLabel("FFXI Mac Launcher", central);
+    title->setObjectName("title");
+    auto* subtitle = new QLabel("Download, install, and launch with a managed compatibility layer.", central);
+    subtitle->setObjectName("subtitle");
 
     auto* status = new QLabel(cfg.installPath.isEmpty()
                                   ? "FFXI not installed"
@@ -66,34 +125,80 @@ QMainWindow* createMainWindow(Config& cfg, QWidget* parent) {
 
     auto* installBtn = new QPushButton("Download All Installer Parts", central);
     auto* cancelBtn = new QPushButton("Cancel Download", central);
+    cancelBtn->setObjectName("secondary");
     auto* retryBtn = new QPushButton("Retry Downloads", central);
+    retryBtn->setObjectName("secondary");
     auto* chooseDownloadBtn = new QPushButton("Choose Download Directory", central);
+    chooseDownloadBtn->setObjectName("secondary");
     auto* choosePathBtn = new QPushButton("Choose Install Directory", central);
+    choosePathBtn->setObjectName("secondary");
     auto* chooseCompatBtn = new QPushButton("Choose Wine/GPTK Binary", central);
+    chooseCompatBtn->setObjectName("secondary");
     auto* choosePrefixBtn = new QPushButton("Choose Prefix Directory", central);
+    choosePrefixBtn->setObjectName("secondary");
     auto* viewChecksumsBtn = new QPushButton("Checksum Report", central);
+    viewChecksumsBtn->setObjectName("secondary");
     auto* viewLogsBtn = new QPushButton("View Logs", central);
+    viewLogsBtn->setObjectName("secondary");
     auto* playBtn = new QPushButton("Play", central);
     playBtn->setEnabled(!cfg.installPath.isEmpty());
 
-    layout->addWidget(status);
-    layout->addWidget(downloadDirLabel);
-    layout->addWidget(compatLabel);
-    layout->addWidget(prefixLabel);
-    layout->addWidget(overallLabel);
-    layout->addWidget(downloadProgress);
-    layout->addWidget(totalProgress);
-    layout->addWidget(errorLabel);
-    layout->addWidget(installBtn);
-    layout->addWidget(cancelBtn);
-    layout->addWidget(retryBtn);
-    layout->addWidget(chooseDownloadBtn);
-    layout->addWidget(choosePathBtn);
-    layout->addWidget(chooseCompatBtn);
-    layout->addWidget(choosePrefixBtn);
-    layout->addWidget(viewChecksumsBtn);
-    layout->addWidget(viewLogsBtn);
-    layout->addWidget(playBtn);
+    layout->addWidget(title);
+    layout->addWidget(subtitle);
+
+    auto* infoCard = new QFrame(central);
+    infoCard->setObjectName("card");
+    auto* infoLayout = new QVBoxLayout(infoCard);
+    infoLayout->setSpacing(6);
+    infoLayout->addWidget(status);
+    infoLayout->addWidget(downloadDirLabel);
+    infoLayout->addWidget(compatLabel);
+    infoLayout->addWidget(prefixLabel);
+
+    auto* dlCard = new QFrame(central);
+    dlCard->setObjectName("card");
+    auto* dlLayout = new QVBoxLayout(dlCard);
+    dlLayout->setSpacing(8);
+    auto* dlHeader = new QLabel("Downloads", dlCard);
+    dlHeader->setObjectName("title");
+    dlHeader->setStyleSheet("font-size:16px; color:#e2e8f0;");
+    dlLayout->addWidget(dlHeader);
+    dlLayout->addWidget(overallLabel);
+    dlLayout->addWidget(downloadProgress);
+    dlLayout->addWidget(totalProgress);
+    dlLayout->addWidget(errorLabel);
+
+    auto* dlButtons = new QHBoxLayout();
+    dlButtons->setSpacing(8);
+    dlButtons->addWidget(installBtn);
+    dlButtons->addWidget(cancelBtn);
+    dlButtons->addWidget(retryBtn);
+    dlLayout->addLayout(dlButtons);
+
+    auto* dlMetaButtons = new QHBoxLayout();
+    dlMetaButtons->setSpacing(8);
+    dlMetaButtons->addWidget(chooseDownloadBtn);
+    dlMetaButtons->addWidget(viewChecksumsBtn);
+    dlMetaButtons->addWidget(viewLogsBtn);
+    dlLayout->addLayout(dlMetaButtons);
+
+    auto* installCard = new QFrame(central);
+    installCard->setObjectName("card");
+    auto* installLayout = new QVBoxLayout(installCard);
+    installLayout->setSpacing(8);
+    auto* installHeader = new QLabel("Installation & Launch", installCard);
+    installHeader->setObjectName("title");
+    installHeader->setStyleSheet("font-size:16px; color:#e2e8f0;");
+    installLayout->addWidget(installHeader);
+    installLayout->addWidget(choosePathBtn);
+    installLayout->addWidget(chooseCompatBtn);
+    installLayout->addWidget(choosePrefixBtn);
+    installLayout->addWidget(playBtn);
+
+    layout->addSpacing(6);
+    layout->addWidget(infoCard);
+    layout->addWidget(dlCard);
+    layout->addWidget(installCard);
     layout->addStretch(1);
 
     const QString defaultDownloadsDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/downloads";
