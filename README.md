@@ -2,6 +2,8 @@
 
 Community-built launcher to help Final Fantasy XI fans download and prepare the Windows installer parts on macOS. Downloads are fetched from the official Square Enix URLs; this tool just streamlines the process.
 
+> Status: Work in progress. The launcher is not fully functional yet.
+
 ## Features
 - Guided download of all installer parts with resume support
 - Progress bars for current file and overall batch
