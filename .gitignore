@@ -1,0 +1,29 @@
+# Build outputs
+/build/
+/cmake-build-debug/
+/cmake-build-release/
+/dist/
+/out/
+/bin/
+/obj/
+/FFXIMacLauncher.app/
+
+# CMake generated files
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/install_manifest.txt
+/Makefile
+
+# IDE/Editor
+.idea/
+.vscode/
+*.user
+*.user.*
+
+# macOS
+.DS_Store
+
+# Logs and crash dumps
+*.log
+*.ips
